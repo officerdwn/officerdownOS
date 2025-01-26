@@ -3,7 +3,7 @@ officerdownOS
 credit to fdipilla for the base.
 
 
-My biggest prgramming dream, coming true.
+My biggest programming dream, coming true.
 Not much, but cool
 
 Dependencies
@@ -20,7 +20,7 @@ Compile & Run
 -------------
 
 First you need to compile the kernel with `make`, now you are ready to run it with `make run`
-Clear your workspace with 'make clear'
+Clear your workspace with `make clear`
 
 
 

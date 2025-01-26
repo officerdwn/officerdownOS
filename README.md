@@ -1,11 +1,10 @@
-hello-world-os
+officerdownOS
 ==============
+credit to fdipilla for the base.
 
-Existe una version de este documento en [español](https://github.com/fdipilla/hello-world-os/blob/master/README.es.md)
 
-Simplest OS ever.
-Also useless, but the idea is to get a basic aproach of how to start on OS development.
-
+My biggest prgramming dream, coming true.
+Not much, but cool
 
 Dependencies
 ------------
@@ -21,6 +20,7 @@ Compile & Run
 -------------
 
 First you need to compile the kernel with `make`, now you are ready to run it with `make run`
+Clear your workspace with 'make clear'
 
 
 

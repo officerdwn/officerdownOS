@@ -23,7 +23,7 @@ Compile & Run
 -------------
 
 First you need to compile the kernel with `make`, now you are ready to run it with `make run`
-Clear your workspace with `make clear`
+Clear your workspace with `make clean`
 
 
 

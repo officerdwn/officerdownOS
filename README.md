@@ -26,8 +26,12 @@ First you need to compile the kernel with `make`, now you are ready to run it wi
 Clear your workspace with `make clean`
 
 
-
 Screenshot
 ----------
 
 ![ScreenShot](/screenshot.png)
+
+Development Roadmap
+-------------------
+You can see the Trello roadmap by going to this link:
+https://trello.com/b/XhYQSA34/officerdownos-actually

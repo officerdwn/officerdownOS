@@ -5,6 +5,7 @@
 void display_ui();
 void display_about();
 char get_input();
+void actualizar_cursor(int row, int col);
 
 #define TXT_BLANCO 0x07 // White on black
 #define KEYBOARD_PORT 0x60 // I/O port for the keyboard
@@ -31,23 +32,34 @@ void limpiar_pantalla() {
     linea = 0; // Reset line counter
 }
 
+// Function to update the cursor position
+void actualizar_cursor(int row, int col) {
+    unsigned short position = (row * 80) + col;
+
+    outb(0x3D4, 0x0F);
+    outb(0x3D5, (unsigned char)(position & 0xFF));
+    outb(0x3D4, 0x0E);
+    outb(0x3D5, (unsigned char)((position >> 8) & 0xFF));
+}
+
 unsigned int imprimir_pantalla(char *string) {
     unsigned int i = (linea * 80 * 2);
 
     while (*string != 0) {
         if (*string == '\n') {
             linea++;
-            i = (linea * 80 * 2);
+            i = (linea * 80 * 2); // Move to next line correctly
             string++;
         } else {
             memoria_video[i] = *string;
-            string++;
             i++;
             memoria_video[i] = TXT_BLANCO;
             i++;
+            string++;
         }
     }
     linea++;
+    actualizar_cursor(linea, 0); // Update cursor after printing
     return 1;
 }
 
@@ -56,18 +68,15 @@ void display_ui() {
 
     limpiar_pantalla(); // Clear the screen
 
-    imprimir_pantalla("                                 officerdownOS\n");
-    imprimir_pantalla("----------------------------------------------------------------------------------\n");
-    imprimir_pantalla("            ---------------                  \n");
-    imprimir_pantalla("\n");
-    imprimir_pantalla("\n");
-    imprimir_pantalla("                   ?                             \n");
-    imprimir_pantalla("\n");
-    imprimir_pantalla("           ----------------                 \n");
-    imprimir_pantalla("\n");
-    imprimir_pantalla("                About (Press 'a')            \n");
-    imprimir_pantalla("\n");
-    imprimir_pantalla("Enter your choice: ");
+    imprimir_pantalla("                              officerdownOS\n");
+    imprimir_pantalla("-------------------------------------------------------------------------------\n");
+    imprimir_pantalla("                             ---------------\n");
+    imprimir_pantalla("                                    ?\n");
+    imprimir_pantalla("                             ---------------\n");
+    imprimir_pantalla("                          About (Press 'a')\n");
+    imprimir_pantalla("\nEnter your choice: ");
+
+    actualizar_cursor(linea, 18); // Move cursor to where user input should appear
 
     desktopOptions = get_input(); // Get user input
 
@@ -88,11 +97,13 @@ void display_about() {
     char aboutChoice;
 
     limpiar_pantalla(); // Clear the screen
-    imprimir_pantalla("                                    About\n");
-    imprimir_pantalla("----------------------------------------------------------------------------------\n");
-    imprimir_pantalla("  officerdownOS v0.1.1\n");
-    imprimir_pantalla("  Compiled 01/25/2025\n");
+    imprimir_pantalla("                                      About\n");
+    imprimir_pantalla("-------------------------------------------------------------------------------\n");
+    imprimir_pantalla("  officerdownOS v0.1.2\n");
+    imprimir_pantalla("  Committed 02/07/2025\n");
     imprimir_pantalla("\nPress 'b' to go back to the main menu.");
+
+    actualizar_cursor(linea + 1, 18); // Move cursor where input should be
 
     while (1) {
         aboutChoice = get_input(); // Get user input
@@ -120,7 +131,6 @@ char scancode_to_ascii[128] = {
 char get_input() {
     char key;
     
-    // Wait for a valid key press
     while (1) {
         if (inb(0x64) & 0x1) { // Check if a key is available
             unsigned char scancode = inb(0x60); // Read scancode

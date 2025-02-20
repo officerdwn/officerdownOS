@@ -26,6 +26,14 @@ First you need to compile the kernel with `make`, now you are ready to run it wi
 Clear your workspace with `make clean`
 
 
+VMWare & Physical Hardware
+--------------------------
+officerdownOS DOES support physical LEGACY hardware and VMWare, 
+to run on physical hardware, use a program like rufus to flash 
+it as MBR. To run it on VMWare give it around a gigabyte of RAM
+and 1 GB of storage (because VMWare doesn't like 0 GB)
+and run it.
+
 Screenshot
 ----------
 

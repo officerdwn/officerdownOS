@@ -33,6 +33,8 @@ to run on physical hardware, use a program like rufus to flash
 it as MBR. To run it on VMWare give it around a gigabyte of RAM
 and 1 GB of storage (because VMWare doesn't like 0 GB)
 and run it.
+I have not tested it on Virtualbox, but im sure it would run 
+on it.
 
 Screenshot
 ----------

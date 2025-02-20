@@ -35,6 +35,11 @@ and 1 GB of storage (because VMware doesn't like 0 GB)
 and run it.
 I have not tested it on Virtualbox, but im sure it would run 
 on it.
+PSA: With the v0.1.3 Update, at least with my testing, 
+officerdownOS will not boot on legacy hardware, it still 
+works on VMWare though. I will attempt to address this 
+in the v0.1.4 update. Meanwhile, use v0.1.2 on lagacy
+hardware.
 
 Screenshot
 ----------

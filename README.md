@@ -37,7 +37,7 @@ I have not tested it on Virtualbox, but im sure it would run
 on it.
 PSA: The physical hardware boot issue has been fixed. You can now use
 v0.1.3 on physical hardware. Please open an issue if you have trouble 
-boot on any version of officerdownOS
+booting on any current or future version of officerdownOS
 
 Screenshot
 ----------

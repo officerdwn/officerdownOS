@@ -35,9 +35,12 @@ and 1 GB of storage (because VMware doesn't like 0 GB)
 and run it.
 I have not tested it on Virtualbox, but im sure it would run 
 on it.
+NOTE: Use the prebuilt ISO for booting on physical hardware and VMWare.
+(or build it and make a GRUB image)
 PSA: The physical hardware boot issue has been fixed. You can now use
 v0.1.3 on physical hardware. Please open an issue if you have trouble 
 booting on any current or future version of officerdownOS
+
 
 Screenshot
 ----------

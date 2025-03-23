@@ -25,6 +25,11 @@ Compile & Run
 First you need to compile the kernel with `make`, now you are ready to run it with `make run`.
 Clear your workspace with `make clean`
 
+Screenshot
+----------
+
+![ScreenShot](/screenshot.png)
+
 
 VMware & Physical Hardware
 --------------------------
@@ -41,11 +46,6 @@ PSA: The physical hardware boot issue has been fixed. You can now use
 v0.1.3 on physical hardware. Please open an issue if you have trouble 
 booting on any current or future version of officerdownOS
 
-
-Screenshot
-----------
-
-![ScreenShot](/screenshot.png)
 
 Development Roadmap
 -------------------

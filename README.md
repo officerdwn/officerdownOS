@@ -8,6 +8,7 @@ Not much, but cool.
 I will try to update this as much as i can, because it is my coolest project.
 Please make an issue with suggetons for what I should add. Its pretty barebones right now.
 I have previously stated that I wont add a GUI, but I am considering adding one.
+
 Dependencies
 ------------
 

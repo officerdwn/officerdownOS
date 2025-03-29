@@ -1,4 +1,4 @@
-# officerdownOS Makefile (native gcc version)
+# officerdownOS Makefile — split build/iso
 
 CC = gcc
 LD = ld
@@ -12,7 +12,7 @@ ISO_DIR = iso
 KERNEL_BIN = kernel.bin
 ISO = officerdownOS.iso
 
-all: $(ISO)
+all: $(KERNEL_BIN)
 
 ks.o: kernel_start.asm
 	nasm -f elf kernel_start.asm -o ks.o
@@ -22,12 +22,12 @@ kernel.o: kernel.c
 
 $(KERNEL_BIN): $(OBJ)
 	$(LD) $(LDFLAGS) -o $(KERNEL_BIN) $(OBJ)
-
-$(ISO): $(KERNEL_BIN)
 	mkdir -p $(ISO_DIR)/boot/grub
 	cp $(KERNEL_BIN) $(ISO_DIR)/boot/
 	cp boot/grub/grub.cfg $(ISO_DIR)/boot/grub/
-	grub-mkrescue -o $(ISO) $(ISO_DIR)
+
+iso: $(KERNEL_BIN)
+	grub-mkrescue -o $(ISO) $(ISO_DIR) --compress=xz
 
 run: $(ISO)
 	qemu-system-i386 -cdrom $(ISO)

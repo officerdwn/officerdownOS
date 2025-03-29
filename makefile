@@ -1,4 +1,4 @@
-# officerdownOS Makefile — split build/iso
+# officerdownOS Makefile — no auto-ISO on `make`
 
 CC = gcc
 LD = ld
@@ -11,6 +11,8 @@ OBJ = kernel.o ks.o
 ISO_DIR = iso
 KERNEL_BIN = kernel.bin
 ISO = officerdownOS.iso
+
+.PHONY: all iso run clean
 
 all: $(KERNEL_BIN)
 

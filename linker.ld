@@ -1,16 +1,27 @@
-ENTRY (start)
-SECTIONS{
-        . =0x00100000;
-        .text : {
-              *(.text)
-        }
-        .rodata ALIGN (0x1000) : {
-              *(.data)
-        }
-        .bss : {
-              sbss = .;
-              *(COMMON)
-              *(.bss)
-              ebss = .;
-        }
+ENTRY(start)
+
+SECTIONS {
+    . = 1M;
+
+    .multiboot : {
+        *(.multiboot)
+    }
+
+    .text : {
+        *(.text)
+    }
+
+    .rodata : {
+        *(.rodata)
+    }
+
+    .data : {
+        *(.data)
+    }
+
+    .bss : {
+        *(.bss)
+        *(COMMON)
+    }
 }
+

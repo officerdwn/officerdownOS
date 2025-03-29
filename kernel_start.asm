@@ -1,30 +1,18 @@
-global start
-extern  kernel_main
-
-MODULEALIGH     equ 1<<0
-MEMINFO         equ 1<<1
-
-FLAGS           equ MODULEALIGH | MEMINFO
-MAGIC           equ 0x1BADB002
-CHECKSUM        equ -(MAGIC + FLAGS)
-
-section .text
+section .multiboot
 align 4
 
-MultiBootHeader:
-        dd MAGIC
-        dd FLAGS
-        dd CHECKSUM
+    dd 0x1BADB002
+    dd 0x00000003
+    dd -(0x1BADB002 + 0x00000003)
 
+section .text
+global start
+extern kernel_main
 
 start:
-        call kernel_main
-        cli
+    call kernel_main
+    cli
+.hang:
+    hlt
+    jmp .hang
 
-esperar:
-        hlt
-        jmp esperar
-
-
-section .bss
-        align 4

@@ -1,3 +1,5 @@
+![officerdownOS logo](/logo.png)
+
 officerdownOS
 ==============
 credit to fdipilla for the base.
@@ -17,6 +19,8 @@ Dependencies
 * ld
 * qemu
 * make
+* xorriso
+* grub-mkrescue
 
 
 Compile & Run

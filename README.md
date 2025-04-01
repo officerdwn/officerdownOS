@@ -23,7 +23,7 @@ Compile & Run
 -------------
 
 First you need to compile the kernel with `make`, now you are ready to run it with `make run`.
-Clear your workspace with `make clean`
+Clear your workspace with `make clean`. Make an ISO with `make iso`.
 
 VMware & Physical Hardware
 --------------------------
@@ -37,6 +37,12 @@ on it.
 NOTE: Use the prebuilt ISO for booting on physical hardware and VMWare.
 (or build it and make a GRUB image)
 PSA: Physical Hardware booting has had issues with v0.1.4, Just use a VM.
+
+Versioning
+----------
+
+![officerdownOS versioning](/versioning.png)
+
 
 Development Roadmap
 -------------------

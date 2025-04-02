@@ -26,8 +26,8 @@ Dependencies
 Compile & Run
 -------------
 
-First you need to compile the kernel with `make`, now you are ready to run it with `make run`.
-Clear your workspace with `make clean`. Make an ISO with `make iso`.
+First you need to compile the kernel with `make`, Make an ISO with `make iso`. Now you are ready to run it with `make run`.
+Clear your workspace with `make clean`. 
 
 VMware & Physical Hardware
 --------------------------

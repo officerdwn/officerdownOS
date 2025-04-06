@@ -1,40 +1,69 @@
-# officerdownOS Makefile — no auto-ISO on `make`
-
+# Compiler and linker settings
 CC = gcc
+AS = nasm
 LD = ld
 CFLAGS = -m32 -ffreestanding -fno-stack-protector -O2 -Wall -Wextra
+ASFLAGS = -f elf
 LDFLAGS = -m elf_i386 -T linker.ld
 
-SRC = kernel.c kernel_start.asm
-OBJ = kernel.o ks.o
+# Object files
+OBJS = kernel.o ks.o
 
-ISO_DIR = iso
-KERNEL_BIN = kernel.bin
-ISO = officerdownOS.iso
+# ISO filename
+ISO_NAME = officerdownOS.iso
 
-.PHONY: all iso run clean
+# Default target
+.PHONY: all
+all: kernel.bin
 
-all: $(KERNEL_BIN)
+# Kernel binary
+kernel.bin: $(OBJS)
+	$(LD) $(LDFLAGS) -o $@ $^
 
+# Compile C files
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Compile assembly files
 ks.o: kernel_start.asm
-	nasm -f elf kernel_start.asm -o ks.o
+	$(AS) $(ASFLAGS) $< -o $@
 
-kernel.o: kernel.c
-	$(CC) $(CFLAGS) -c kernel.c -o kernel.o
+# ISO image
+$(ISO_NAME): kernel.bin
+	@echo "Building ISO image..."
+	mkdir -p iso/boot/grub
+	cp kernel.bin iso/boot/
+	cp boot/grub/grub.cfg iso/boot/grub/
+	grub-mkrescue -o $(ISO_NAME) iso
 
-$(KERNEL_BIN): $(OBJ)
-	$(LD) $(LDFLAGS) -o $(KERNEL_BIN) $(OBJ)
-	mkdir -p $(ISO_DIR)/boot/grub
-	cp $(KERNEL_BIN) $(ISO_DIR)/boot/
-	cp boot/grub/grub.cfg $(ISO_DIR)/boot/grub/
+# Build ISO image
+.PHONY: iso
+iso: $(ISO_NAME)
 
-iso: $(KERNEL_BIN)
-	grub-mkrescue -o $(ISO) $(ISO_DIR) --compress=xz
+# Run with kernel binary directly
+.PHONY: run-kernel
+run-kernel: kernel.bin
+	@echo "Running with kernel binary..."
+	qemu-system-i386 -kernel kernel.bin
 
-run: $(ISO)
-	qemu-system-i386 -cdrom $(ISO)
+# Run with ISO
+.PHONY: run-iso
+run-iso: $(ISO_NAME)
+	@echo "Running with ISO image..."
+	qemu-system-i386 -cdrom $(ISO_NAME)
 
+# Run target (configurable)
+.PHONY: run
+run:
+ifeq ($(iso),1)
+	@$(MAKE) run-iso
+else
+	@$(MAKE) run-kernel
+endif
+
+# Clean up
+.PHONY: clean
 clean:
 	rm -f *.o *.bin *.iso
-	rm -rf $(ISO_DIR)
-
+	rm -rf iso
+	@echo "All build artifacts removed."

@@ -26,7 +26,8 @@ Dependencies
 Compile & Run
 -------------
 
-First you need to compile the kernel with `make`, Make an ISO with `make iso`. Now you are ready to run it with `make run`.
+First you need to compile the kernel with `make`,  Now you are ready to run it with `make run`.
+to run on physical hardware run `make iso` and to test the iso in QEMU run `make run iso=1`
 Clear your workspace with `make clean`. 
 
 VMware & Physical Hardware

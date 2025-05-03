@@ -30,6 +30,12 @@ First you need to compile the kernel with `make`,  Now you are ready to run it w
 to run on physical hardware run `make iso` and to test the iso in QEMU run `make run iso=1`
 Clear your workspace with `make clean`. 
 
+As of 5/2 you can now build the kernel binary using the Scripts. You can get them here:
+https://officerdownos.weebly.com/compile.html
+or 
+https://github.com/officerdwn/officerdownOS-windowsbuild/
+
+
 VMware & Physical Hardware
 --------------------------
 officerdownOS DOES support physical LEGACY hardware and VMware, 

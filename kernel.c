@@ -1,6 +1,10 @@
 #include "kernel.h"
 #include "screen.h"
 
+void display_ui(void);
+void display_about(void);
+void display_calculator(void);
+
 // Global state
 int shift = 0;
 int caps_lock = 0;

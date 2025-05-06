@@ -1,5 +1,14 @@
 ![officerdownOS logo](/logo.png)
 
+![License](https://img.shields.io/github/license/officerdwn/officerdownOS)
+![GitHub issues](https://img.shields.io/github/issues/officerdwn/officerdownOS)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/officerdwn/officerdownOS)
+![GitHub stars](https://img.shields.io/github/stars/officerdwn/officerdownOS?style=social)
+![GitHub forks](https://img.shields.io/github/forks/officerdwn/officerdownOS?style=social)
+![Last Commit](https://img.shields.io/github/last-commit/officerdwn/officerdownOS)
+![Language](https://img.shields.io/badge/language-C-blue)
+![Platform](https://img.shields.io/badge/platform-x86--64%20BIOS-orange)
+
 officerdownOS
 ==============
 credit to fdipilla for the base.

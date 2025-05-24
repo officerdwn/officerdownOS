@@ -1,5 +1,5 @@
 
-![officerdownOS logo2](/logo2.png)
+  ![officerdownOS logo2](/logo2.png)
 
 
 ![officerdownOS logo](/logo.png)

@@ -245,18 +245,19 @@ void display_ui() {
 
     limpiar_pantalla(); // Reset screen and linea = 0
 
-    // Draw the header (lines 0–5)
-    imprimir_pantalla("                              officerdownOS\n"); // line 0
-    imprimir_pantalla("-------------------------------------------------------------------------------\n"); // line 1
-    imprimir_pantalla("    ---------------           ---------------\n"); // line 2
-    imprimir_pantalla("            ?                      2+2=4\n");       // line 3
-    imprimir_pantalla("    ---------------           ---------------\n"); // line 4
-    imprimir_pantalla("      About (Press 'a')     Calculator (Press 'c')\n"); // line 5
+    imprimir_pantalla("                               officerdownOS\n");
+    imprimir_pantalla("-------------------------------------------------------------------------------\n");
+    imprimir_pantalla("\n");  // extra vertical space
+    imprimir_pantalla("    ---------------          ---------------\n");
+    imprimir_pantalla("\n");
+    imprimir_pantalla("           ?                      2+2=4\n");
+    imprimir_pantalla("\n");
+    imprimir_pantalla("    ---------------          ---------------\n");
+    imprimir_pantalla("\n");
+    imprimir_pantalla("   About (Press 'a')      Calculator (Press 'c')\n");
+    imprimir_pantalla("\n");
+    imprimir_pantalla("Enter your choice: ");
 
-    // 👉 Start writing below the header (start at line 6)
-    linea = 6;
-
-    imprimir_pantalla("\nEnter your choice: ");
     get_string(input_buffer, sizeof(input_buffer));
 
     if (strcmp(input_buffer, "a") == 0 || strcmp(input_buffer, "about") == 0) {
@@ -282,8 +283,9 @@ void display_about() {
     limpiar_pantalla();
     imprimir_pantalla("                                      About\n");
     imprimir_pantalla("-------------------------------------------------------------------------------\n");
-    imprimir_pantalla("  officerdownOS v0.1.4\n");
-    imprimir_pantalla("  Committed 03/29/2025\n");
+    imprimir_pantalla("  officerdownOS Main Branch v0.1.5\n");
+    imprimir_pantalla("  officerdownOS Rocky v1.0.0\n");
+    imprimir_pantalla("  Committed 05/27/2025\n");
     imprimir_pantalla("\nPress 'b' to go back to the main menu.");
 
     actualizar_cursor(linea, 0);

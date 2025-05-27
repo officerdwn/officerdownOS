@@ -38,14 +38,7 @@ Dependencies
 * grub-mkrescue
 
 You can run this command on debian based distros to get the dependencies:
-  `sudo apt update && sudo apt install -y \
-  build-essential \
-  gcc-multilib \
-  libc6-dev-i386 \
-  nasm \
-  qemu \
-  grub-pc-bin \
-  xorriso`
+  `sudo apt update && sudo apt install -y build-essential gcc-multilib libc6-dev-i386 nasm qemu-system-x86 grub-pc-bin xorriso`
 
 Note: On Debian unstable (sid), use qemu-system-i386 instead of qemu (the meta-package may be removed).
 

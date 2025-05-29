@@ -10,14 +10,14 @@ int shift = 0;
 int caps_lock = 0;
 int previous_result = 0;
 
-#define TXT_BLANCO 0x07
+#define TEXT_WHITE 0x07
 #define KEYBOARD_PORT 0x60
 #define MAX_LINEAS 25
 
-char *memoria_video = (char *)0xb8000;
-unsigned int linea = 0;
+char *video_memory = (char *)0xb8000;
+unsigned int cursor_line = 0;
 
-// ------------------------ Keyboard mappings ------------------------
+// ------------------------ Keyboard Mappings (Scancode to ASCII) ------------------------
 char scancode_to_ascii[128] = {
     0, 27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b',
     '\t', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',
@@ -34,7 +34,7 @@ char shifted_scancode_to_ascii[128] = {
     '*', 0, ' '
 };
 
-// ------------------------ Utility Functions ------------------------
+// ------------------------ Utility Functions (atoi, itoa, strcmp) ------------------------
 
 int atoi(const char *str) {
     int result = 0, sign = 1;
@@ -86,64 +86,64 @@ int strcmp(const char *s1, const char *s2) {
     return *(unsigned char *)s1 - *(unsigned char *)s2;
 }
 
-// ------------------------ Core OS Functions ------------------------
+// ------------------------ Core Kernel Logic (Main Loop, Screen Ops) ------------------------
 
 void kernel_main() {
-    limpiar_pantalla();
+    clear_screen();
     while (1) {
         display_ui();
     }
 }
 
-void limpiar_pantalla() {
+void clear_screen() {
     for (unsigned int i = 0; i < (80 * 25 * 2); i += 2) {
-        memoria_video[i] = ' ';
-        memoria_video[i + 1] = TXT_BLANCO;
+        video_memory[i] = ' ';
+        video_memory[i + 1] = TEXT_WHITE;
     }
-    linea = 0;
+    cursor_line = 0;
 }
 
-void scroll_pantalla() {
+void scroll_screen() {
     for (int row = 1; row < MAX_LINEAS; row++) {
         for (int col = 0; col < 80; col++) {
             int from = (row * 80 + col) * 2;
             int to = ((row - 1) * 80 + col) * 2;
-            memoria_video[to] = memoria_video[from];
-            memoria_video[to + 1] = memoria_video[from + 1];
+            video_memory[to] = video_memory[from];
+            video_memory[to + 1] = video_memory[from + 1];
         }
     }
 
     // Clear last line
     for (int col = 0; col < 80; col++) {
         int pos = ((MAX_LINEAS - 1) * 80 + col) * 2;
-        memoria_video[pos] = ' ';
-        memoria_video[pos + 1] = TXT_BLANCO;
+        video_memory[pos] = ' ';
+        video_memory[pos + 1] = TEXT_WHITE;
     }
 
-    linea = MAX_LINEAS - 1;
+    cursor_line = MAX_LINEAS - 1;
 }
 
-unsigned int imprimir_pantalla(char *string) {
+unsigned int print_to_screen(char *string) {
     int col = 0; // 🔧 Reset every time
 
     while (*string != 0) {
         if (*string == '\n') {
-            linea++;
+            cursor_line++;
             col = 0;
-            if (linea >= MAX_LINEAS) {
-                scroll_pantalla();
+            if (cursor_line >= MAX_LINEAS) {
+                scroll_screen();
             }
         } else {
-            int pos = (linea * 80 + col) * 2;
-            memoria_video[pos] = *string;
-            memoria_video[pos + 1] = TXT_BLANCO;
+            int pos = (cursor_line * 80 + col) * 2;
+            video_memory[pos] = *string;
+            video_memory[pos + 1] = TEXT_WHITE;
             col++;
 
             if (col >= 80) {
-                linea++;
+                cursor_line++;
                 col = 0;
-                if (linea >= MAX_LINEAS) {
-                    scroll_pantalla();
+                if (cursor_line >= MAX_LINEAS) {
+                    scroll_screen();
                 }
             }
         }
@@ -151,7 +151,7 @@ unsigned int imprimir_pantalla(char *string) {
         string++;
     }
 
-    actualizar_cursor(linea, col);
+    update_cursor(cursor_line, col);
     return 1;
 }
 
@@ -159,7 +159,7 @@ unsigned int imprimir_pantalla(char *string) {
 
 
 
-void actualizar_cursor(int row, int col) {
+void update_cursor(int row, int col) {
     unsigned short position = (row * 80) + col;
     outb(0x3D4, 0x0F);
     outb(0x3D5, (unsigned char)(position & 0xFF));
@@ -171,37 +171,37 @@ void get_string(char *buffer, int max_length) {
     int index = 0;
     static unsigned int col = 0;
 
-    if (linea >= MAX_LINEAS) scroll_pantalla();
-    int row = linea;
+    if (cursor_line >= MAX_LINEAS) scroll_screen();
+    int row = cursor_line;
     col = 0;
 
-    actualizar_cursor(row, col);
+    update_cursor(row, col);
 
     while (1) {
         char key = get_input();
 
         if (key == '\n') {
             buffer[index] = '\0';
-            linea++;
-            if (linea >= MAX_LINEAS) scroll_pantalla();
-            actualizar_cursor(linea, 0);
+            cursor_line++;
+            if (cursor_line >= MAX_LINEAS) scroll_screen();
+            update_cursor(cursor_line, 0);
             return;
         } else if (key == '\b') {
             if (index > 0 && col > 0) {
                 index--;
                 col--;
                 int pos = (row * 80 + col) * 2;
-                memoria_video[pos] = ' ';
-                memoria_video[pos + 1] = TXT_BLANCO;
-                actualizar_cursor(row, col);
+                video_memory[pos] = ' ';
+                video_memory[pos + 1] = TEXT_WHITE;
+                update_cursor(row, col);
             }
         } else if (index < max_length - 1) {
             buffer[index++] = key;
             int pos = (row * 80 + col) * 2;
-            memoria_video[pos] = key;
-            memoria_video[pos + 1] = TXT_BLANCO;
+            video_memory[pos] = key;
+            video_memory[pos + 1] = TEXT_WHITE;
             col++;
-            actualizar_cursor(row, col);
+            update_cursor(row, col);
         }
     }
 }
@@ -238,25 +238,25 @@ char get_input() {
     }
 }
 
-// ------------------------ UI Screens ------------------------
+// ------------------------ UI Screens (Main Menu, About, Calculator) ------------------------
 
 void display_ui() {
     char input_buffer[20];
 
-    limpiar_pantalla(); // Reset screen and linea = 0
+    clear_screen(); // Reset screen and cursor_line = 0
 
-    imprimir_pantalla("                               officerdownOS\n");
-    imprimir_pantalla("-------------------------------------------------------------------------------\n");
-    imprimir_pantalla("\n");  // extra vertical space
-    imprimir_pantalla("    ---------------          ---------------\n");
-    imprimir_pantalla("\n");
-    imprimir_pantalla("           ?                      2+2=4\n");
-    imprimir_pantalla("\n");
-    imprimir_pantalla("    ---------------          ---------------\n");
-    imprimir_pantalla("\n");
-    imprimir_pantalla("   About (Press 'a')      Calculator (Press 'c')\n");
-    imprimir_pantalla("\n");
-    imprimir_pantalla("Enter your choice: ");
+    print_to_screen("                               officerdownOS\n");
+    print_to_screen("-------------------------------------------------------------------------------\n");
+    print_to_screen("\n");  // extra vertical space
+    print_to_screen("    ---------------          ---------------\n");
+    print_to_screen("\n");
+    print_to_screen("           ?                      2+2=4\n");
+    print_to_screen("\n");
+    print_to_screen("    ---------------          ---------------\n");
+    print_to_screen("\n");
+    print_to_screen("   About (Press 'a')      Calculator (Press 'c')\n");
+    print_to_screen("\n");
+    print_to_screen("Enter your choice: ");
 
     get_string(input_buffer, sizeof(input_buffer));
 
@@ -265,8 +265,8 @@ void display_ui() {
     } else if (strcmp(input_buffer, "c") == 0 || strcmp(input_buffer, "calc") == 0) {
         display_calculator();
     } else {
-        imprimir_pantalla("\nThis is not recognized. Try again!\n");
-        imprimir_pantalla("Press any key to continue...");
+        print_to_screen("\nThis is not recognized. Try again!\n");
+        print_to_screen("Press any key to continue...");
         get_input();
         display_ui(); // Redraw the screen
     }
@@ -280,21 +280,21 @@ void display_ui() {
 void display_about() {
     char about_input[20];
 
-    limpiar_pantalla();
-    imprimir_pantalla("                                      About\n");
-    imprimir_pantalla("-------------------------------------------------------------------------------\n");
-    imprimir_pantalla("  officerdownOS Main Branch v0.1.5\n");
-    imprimir_pantalla("  officerdownOS Rocky v1.0.0\n");
-    imprimir_pantalla("  Committed 05/27/2025\n");
-    imprimir_pantalla("\nPress 'b' to go back to the main menu.");
+    clear_screen();
+    print_to_screen("                                      About\n");
+    print_to_screen("-------------------------------------------------------------------------------\n");
+    print_to_screen("  officerdownOS Main Branch v0.1.5\n");
+    print_to_screen("  officerdownOS Rocky v1.0.0\n");
+    print_to_screen("  Committed 05/27/2025\n");
+    print_to_screen("\nPress 'b' to go back to the main menu.");
 
-    actualizar_cursor(linea, 0);
+    update_cursor(cursor_line, 0);
     get_string(about_input, sizeof(about_input));
 
     if (strcmp(about_input, "b") == 0) {
         display_ui();
     } else {
-        imprimir_pantalla("\nInvalid input. Press 'b' to go back.");
+        print_to_screen("\nInvalid input. Press 'b' to go back.");
     }
 }
 
@@ -304,80 +304,80 @@ void display_calculator() {
     int num1, num2, result = 0;
 
 main_menu:
-    limpiar_pantalla();
-    imprimir_pantalla("                                     Office Calculator\n");
-    imprimir_pantalla("------------------------------------------------------------------------------------------------\n\n");
-    imprimir_pantalla("Calculator version 1.0\n\n");
-    imprimir_pantalla("---------------------------\n\n");
-    imprimir_pantalla("/////////////////////////////////////\n");
+    clear_screen();
+    print_to_screen("                                     Office Calculator\n");
+    print_to_screen("------------------------------------------------------------------------------------------------\n\n");
+    print_to_screen("Calculator version 1.0\n\n");
+    print_to_screen("---------------------------\n\n");
+    print_to_screen("/////////////////////////////////////\n");
 
     char prev[32];
     itoa(previous_result, prev, 10);
-    imprimir_pantalla("Your previous Calculated number was ");
-    imprimir_pantalla(prev);
-    imprimir_pantalla("\n/////////////////////////////////////\n\n");
+    print_to_screen("Your previous Calculated number was ");
+    print_to_screen(prev);
+    print_to_screen("\n/////////////////////////////////////\n\n");
 
-    imprimir_pantalla("Enter the specified alphabet to continue..\n\n");
-    imprimir_pantalla("a) Addition\n\n");
-    imprimir_pantalla("b) Subtraction\n\n");
-    imprimir_pantalla("c) Division\n\n");
-    imprimir_pantalla("d) Multiplication\n\n");
-    imprimir_pantalla("e) Square, Cube or any power (by Prof. Pickle)\n\n");
-    imprimir_pantalla("exit) Exits\n\n");
+    print_to_screen("Enter the specified alphabet to continue..\n\n");
+    print_to_screen("a) Addition\n\n");
+    print_to_screen("b) Subtraction\n\n");
+    print_to_screen("c) Division\n\n");
+    print_to_screen("d) Multiplication\n\n");
+    print_to_screen("e) Square, Cube or any power (by Prof. Pickle)\n\n");
+    print_to_screen("exit) Exits\n\n");
 
-    imprimir_pantalla("Choice: ");
+    print_to_screen("Choice: ");
     get_string(input, sizeof(input));
 
     if (strcmp(input, "exit") == 0) return;
 
     if (strcmp(input, "a") == 0 || strcmp(input, "A") == 0) {
-        imprimir_pantalla("\nADDITION\n\nnum1: ");
+        print_to_screen("\nADDITION\n\nnum1: ");
         get_string(num1_str, sizeof(num1_str));
-        imprimir_pantalla("       +\nnum2: ");
+        print_to_screen("       +\nnum2: ");
         get_string(num2_str, sizeof(num2_str));
         num1 = atoi(num1_str);
         num2 = atoi(num2_str);
         result = num1 + num2;
     } else if (strcmp(input, "b") == 0 || strcmp(input, "B") == 0) {
-        imprimir_pantalla("\nSUBTRACTION\n\nnum1: ");
+        print_to_screen("\nSUBTRACTION\n\nnum1: ");
         get_string(num1_str, sizeof(num1_str));
-        imprimir_pantalla("       -\nnum2: ");
+        print_to_screen("       -\nnum2: ");
         get_string(num2_str, sizeof(num2_str));
         num1 = atoi(num1_str);
         num2 = atoi(num2_str);
         result = num1 - num2;
     } else if (strcmp(input, "c") == 0 || strcmp(input, "C") == 0) {
-        imprimir_pantalla("\nDIVISION\n\nnum1: ");
+        print_to_screen("\nDIVISION\n\nnum1: ");
         get_string(num1_str, sizeof(num1_str));
-        imprimir_pantalla("       /\nnum2: ");
+        print_to_screen("       /\nnum2: ");
         get_string(num2_str, sizeof(num2_str));
         num1 = atoi(num1_str);
         num2 = atoi(num2_str);
         if (num2 == 0) {
-            imprimir_pantalla("Error: Division by zero!\n");
-            imprimir_pantalla("Press any key to continue...");
+            print_to_screen("Error: Division by zero!\n");
+            print_to_screen("Press any key to continue...");
             get_input();
             goto main_menu;
         }
         result = num1 / num2;
     } else if (strcmp(input, "d") == 0 || strcmp(input, "D") == 0) {
-        imprimir_pantalla("\nMULTIPLICATION\n\nnum1: ");
+        print_to_screen("\nMULTIPLICATION\n\nnum1: ");
         get_string(num1_str, sizeof(num1_str));
-        imprimir_pantalla("       *\nnum2: ");
+        print_to_screen("       *\nnum2: ");
         get_string(num2_str, sizeof(num2_str));
         num1 = atoi(num1_str);
         num2 = atoi(num2_str);
         result = num1 * num2;
     } else if (strcmp(input, "e") == 0 || strcmp(input, "E") == 0) {
-        imprimir_pantalla("\nSquare, Cube or any power (by Prof. Pickle)\n\nSelect the number: ");
+        print_to_screen("\nSquare, Cube or any power (by Prof. Pickle)\n\nSelect the number: ");
         get_string(num1_str, sizeof(num1_str));
-        imprimir_pantalla("Select the power: ");
+        print_to_screen("Select the power: ");
         get_string(num2_str, sizeof(num2_str));
         num1 = atoi(num1_str);
         num2 = atoi(num2_str);
         if (num2 < 0 || num2 > 12) {
-            imprimir_pantalla("Error: Power too large or invalid.\n");
-            imprimir_pantalla("Press any key to continue...");
+            print_to_screen("Error: Power too large or invalid.\n");
+            print_to_screen("Press any key to continue...");
             get_input();
             goto main_menu;
         }
@@ -386,7 +386,7 @@ main_menu:
             result *= num1;
         }
     } else {
-        imprimir_pantalla("\nInvalid value. Press any key to try again...\n");
+        print_to_screen("\nInvalid value. Press any key to try again...\n");
         get_input();
         goto main_menu;
     }
@@ -394,9 +394,9 @@ main_menu:
     previous_result = result;
     char result_str[16];
     itoa(result, result_str, 10);
-    imprimir_pantalla("\n------------\n");
-    imprimir_pantalla(result_str);
-    imprimir_pantalla("\n\nPress any key to return to menu...");
+    print_to_screen("\n------------\n");
+    print_to_screen(result_str);
+    print_to_screen("\n\nPress any key to return to menu...");
     get_input();
     goto main_menu;
 }

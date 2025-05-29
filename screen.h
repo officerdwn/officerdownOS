@@ -1,3 +1,8 @@
+#ifndef SCREEN_H
+#define SCREEN_H
 
-void limpiar_pantalla();
-unsigned int imprimir_pantalla(char *);
+// Function declarations (not calls!)
+void clear_screen();
+unsigned int print_to_screen(char *string);
+
+#endif

@@ -42,6 +42,9 @@ You can run this command on debian based distros to get the dependencies:
 
 Note: On Debian unstable (sid), use qemu-system-i386 instead of qemu (the meta-package may be removed).
 
+There is also a Nix config available to use, which clones the repo and downloads all dependencies.
+This can be found at: https://github.com/officerdwn/officerdownOScompile-nixconfig
+
 
 Compile & Run
 -------------

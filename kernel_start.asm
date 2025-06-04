@@ -9,13 +9,37 @@ CHECKSUM    equ -(MAGIC + FLAGS)        ; checksum of above to prove we are mult
 global start
 extern kernel_main
 
-; Put the multiboot header in its own dedicated section
+; Put the Multiboot header in its own dedicated section
 section .text.boot
 align 4
 multiboot_header:
     dd MAGIC                            ; Magic number
     dd FLAGS                            ; Flags
     dd CHECKSUM                         ; Checksum
+
+; ---------------------- Multiboot2 header for UEFI --------------------------
+MB2_MAGIC      equ 0xE85250D6
+MB2_ARCH_I386  equ 0
+MB2_LENGTH     equ mb2_header_end - mb2_header_start
+MB2_CHECKSUM   equ -(MB2_MAGIC + MB2_ARCH_I386 + MB2_LENGTH)
+
+align 8
+mb2_header_start:
+    dd MB2_MAGIC
+    dd MB2_ARCH_I386
+    dd MB2_LENGTH
+    dd MB2_CHECKSUM
+    ; Entry address tag
+    dw 3                  ; type = entry address
+    dw 0                  ; flags
+    dd 12                 ; size
+    dd start              ; entry point
+    dd 0
+    ; End tag
+    dw 0
+    dw 0
+    dd 8
+mb2_header_end:
 
 ; The kernel entry point
 section .text

@@ -5,6 +5,7 @@ LD = ld
 CFLAGS = -m32 -ffreestanding -fno-stack-protector -O2 -Wall -Wextra
 ASFLAGS = -f elf
 LDFLAGS = -m elf_i386 -T linker.ld
+OVMF_CODE ?= /usr/share/OVMF/OVMF_CODE_4M.fd
 
 # Object files
 OBJS = kernel.o ks.o
@@ -46,6 +47,12 @@ run-kernel: kernel.bin
 	@echo "Running with kernel binary..."
 	qemu-system-i386 -kernel kernel.bin
 
+# Run ISO in UEFI mode using OVMF
+.PHONY: run-uefi
+run-uefi: $(ISO_NAME)
+	@echo "Running with ISO image under UEFI..."
+	qemu-system-x86_64 -bios $(OVMF_CODE) -cdrom $(ISO_NAME)
+
 # Run with ISO
 .PHONY: run-iso
 run-iso: $(ISO_NAME)
@@ -55,7 +62,9 @@ run-iso: $(ISO_NAME)
 # Run target (configurable)
 .PHONY: run
 run:
-ifeq ($(iso),1)
+ifeq ($(uefi),1)
+	@$(MAKE) run-uefi
+else ifeq ($(iso),1)
 	@$(MAKE) run-iso
 else
 	@$(MAKE) run-kernel

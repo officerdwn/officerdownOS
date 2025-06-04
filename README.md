@@ -51,7 +51,22 @@ Compile & Run
 
 First you need to compile the kernel with `make`,  Now you are ready to run it with `make run`.
 to run on physical hardware run `make iso` and to test the iso in QEMU run `make run iso=1`
-Clear your workspace with `make clean`. 
+Clear your workspace with `make clean`.
+
+UEFI Support
+------------
+Starting with this release the build system can create an ISO that boots on
+UEFI systems. Ensure `grub-efi-amd64-bin` is installed so that
+`grub-mkrescue` can embed an EFI loader. When running under QEMU you can use
+the included OVMF firmware:
+
+```
+make iso
+make run iso=1 uefi=1
+```
+
+This launches the ISO with UEFI firmware. Legacy BIOS booting continues to
+work as before.
 
 As of 5/2 you can now build the kernel binary on Windows using the Scripts. You can get them here:
 https://officerdownos.weebly.com/compile.html

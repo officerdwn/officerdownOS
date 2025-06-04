@@ -283,9 +283,8 @@ void display_about() {
     clear_screen();
     print_to_screen("                                      About\n");
     print_to_screen("-------------------------------------------------------------------------------\n");
-    print_to_screen("  officerdownOS Main Branch v0.1.5\n");
-    print_to_screen("  officerdownOS Rocky v1.0.0\n");
-    print_to_screen("  Committed 05/27/2025\n");
+    print_to_screen("  officerdownOS Main Branch v0.1.6\n");
+    print_to_screen("  Committed 06/04/2025\n");
     print_to_screen("\nPress 'b' to go back to the main menu.");
 
     update_cursor(cursor_line, 0);
@@ -322,7 +321,7 @@ main_menu:
     print_to_screen("b) Subtraction\n\n");
     print_to_screen("c) Division\n\n");
     print_to_screen("d) Multiplication\n\n");
-    print_to_screen("e) Square, Cube or any power (by Prof. Pickle)\n\n");
+    print_to_screen("e) Square, Cube or any power\n\n");
     print_to_screen("exit) Exits\n\n");
 
     print_to_screen("Choice: ");
@@ -369,7 +368,7 @@ main_menu:
         num2 = atoi(num2_str);
         result = num1 * num2;
     } else if (strcmp(input, "e") == 0 || strcmp(input, "E") == 0) {
-        print_to_screen("\nSquare, Cube or any power (by Prof. Pickle)\n\nSelect the number: ");
+        print_to_screen("\nSquare, Cube or any power\n\nSelect the number: ");
         get_string(num1_str, sizeof(num1_str));
         print_to_screen("Select the power: ");
         get_string(num2_str, sizeof(num2_str));

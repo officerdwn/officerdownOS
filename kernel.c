@@ -305,7 +305,7 @@ void display_calculator() {
 
 main_menu:
     clear_screen();
-    print_to_screen("                                     Office Calculator\n");
+    print_to_screen("                                         Calculator\n");
     print_to_screen("------------------------------------------------------------------------------------------------\n\n");
     print_to_screen("Calculator version 1.0\n\n");
     print_to_screen("---------------------------\n\n");
@@ -322,7 +322,7 @@ main_menu:
     print_to_screen("b) Subtraction\n\n");
     print_to_screen("c) Division\n\n");
     print_to_screen("d) Multiplication\n\n");
-    print_to_screen("e) Square, Cube or any power (by Prof. Pickle)\n\n");
+    print_to_screen("e) Square, Cube or any power\n\n");
     print_to_screen("exit) Exits\n\n");
 
     print_to_screen("Choice: ");

@@ -307,7 +307,7 @@ main_menu:
     clear_screen();
     print_to_screen("                                         Calculator\n");
     print_to_screen("------------------------------------------------------------------------------------------------\n\n");
-    print_to_screen("Calculator version 1.0\n\n");
+    print_to_screen("Calculator version 1.1\n\n");
     print_to_screen("---------------------------\n\n");
     print_to_screen("/////////////////////////////////////\n");
 

@@ -369,7 +369,7 @@ main_menu:
         num2 = atoi(num2_str);
         result = num1 * num2;
     } else if (strcmp(input, "e") == 0 || strcmp(input, "E") == 0) {
-        print_to_screen("\nSquare, Cube or any power (by Prof. Pickle)\n\nSelect the number: ");
+        print_to_screen("\nSquare, Cube or any power \n\nSelect the number: ");
         get_string(num1_str, sizeof(num1_str));
         print_to_screen("Select the power: ");
         get_string(num2_str, sizeof(num2_str));

@@ -1,9 +1,11 @@
 #include "kernel.h"
 #include "screen.h"
+#include "filesystem.h"
 
 void display_ui(void);
 void display_about(void);
 void display_calculator(void);
+void display_filesystem(void);
 
 // Global state
 int shift = 0;
@@ -89,6 +91,7 @@ int strcmp(const char *s1, const char *s2) {
 // ------------------------ Core Kernel Logic (Main Loop, Screen Ops) ------------------------
 
 void kernel_main() {
+    fs_init();
     clear_screen();
     while (1) {
         display_ui();
@@ -254,7 +257,9 @@ void display_ui() {
     print_to_screen("\n");
     print_to_screen("    ---------------          ---------------\n");
     print_to_screen("\n");
-    print_to_screen("   About (Press 'a')      Calculator (Press 'c')\n");
+   print_to_screen("   About (Press 'a')      Calculator (Press 'c')\n");
+   print_to_screen("\n");
+   print_to_screen("   Filesystem (Press 'f')\n");
     print_to_screen("\n");
     print_to_screen("Enter your choice: ");
 
@@ -264,6 +269,8 @@ void display_ui() {
         display_about();
     } else if (strcmp(input_buffer, "c") == 0 || strcmp(input_buffer, "calc") == 0) {
         display_calculator();
+    } else if (strcmp(input_buffer, "f") == 0 || strcmp(input_buffer, "fs") == 0) {
+        display_filesystem();
     } else {
         print_to_screen("\nThis is not recognized. Try again!\n");
         print_to_screen("Press any key to continue...");
@@ -399,4 +406,46 @@ main_menu:
     print_to_screen("\n\nPress any key to return to menu...");
     get_input();
     goto main_menu;
+}
+
+void display_filesystem() {
+    char cmd[10];
+    char name[32];
+    char buffer[1024];
+
+    while (1) {
+        clear_screen();
+        print_to_screen("                                      FAT12 Filesystem\n");
+        print_to_screen("-------------------------------------------------------------------------------\n");
+        print_to_screen("l) List files\n");
+        print_to_screen("v) View file\n");
+        print_to_screen("b) Back\n\n");
+        print_to_screen("Choice: ");
+        get_string(cmd, sizeof(cmd));
+
+        if (strcmp(cmd, "b") == 0) {
+            break;
+        } else if (strcmp(cmd, "l") == 0) {
+            print_to_screen("\n");
+            fs_list();
+            print_to_screen("\nPress any key to continue...");
+            get_input();
+        } else if (strcmp(cmd, "v") == 0) {
+            print_to_screen("\nName: ");
+            get_string(name, sizeof(name));
+            if (fs_read_file(name, buffer) >= 0) {
+                print_to_screen("\n");
+                print_to_screen(buffer);
+                print_to_screen("\n");
+            } else {
+                print_to_screen("\nNot found.\n");
+            }
+            print_to_screen("Press any key to continue...");
+            get_input();
+        } else {
+            print_to_screen("\nInvalid option.\n");
+            print_to_screen("Press any key to continue...");
+            get_input();
+        }
+    }
 }

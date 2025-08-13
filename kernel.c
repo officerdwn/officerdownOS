@@ -419,6 +419,7 @@ void display_filesystem() {
         print_to_screen("-------------------------------------------------------------------------------\n");
         print_to_screen("l) List files\n");
         print_to_screen("v) View file\n");
+        print_to_screen("c) Create file\n");
         print_to_screen("b) Back\n\n");
         print_to_screen("Choice: ");
         get_string(cmd, sizeof(cmd));
@@ -439,6 +440,24 @@ void display_filesystem() {
                 print_to_screen("\n");
             } else {
                 print_to_screen("\nNot found.\n");
+            }
+            print_to_screen("Press any key to continue...");
+            get_input();
+        } else if (strcmp(cmd, "c") == 0) {
+            unsigned int free = fs_free_space();
+            char num[16];
+            itoa(free, num, 10);
+            print_to_screen("\nFree: ");
+            print_to_screen(num);
+            print_to_screen(" bytes\n");
+            print_to_screen("Name: ");
+            get_string(name, sizeof(name));
+            print_to_screen("Content: ");
+            get_string(buffer, sizeof(buffer));
+            if (fs_write_file(name, buffer) == 0) {
+                print_to_screen("\nSaved.\n");
+            } else {
+                print_to_screen("\nFailed.\n");
             }
             print_to_screen("Press any key to continue...");
             get_input();

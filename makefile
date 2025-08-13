@@ -7,7 +7,7 @@ ASFLAGS = -f elf
 LDFLAGS = -m elf_i386 -T linker.ld
 
 # Object files
-OBJS = kernel.o ks.o
+OBJS = kernel.o ks.o filesystem.o disk.o
 
 # ISO filename
 ISO_NAME = officerdownOS.iso

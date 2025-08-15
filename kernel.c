@@ -1,5 +1,7 @@
 #include "kernel.h"
 #include "screen.h"
+#include "version.h"
+
 
 void display_ui(void);
 void display_about(void);

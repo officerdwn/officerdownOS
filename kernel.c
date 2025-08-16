@@ -1,5 +1,6 @@
 #include "kernel.h"
 #include "screen.h"
+#include "version.h"
 #include "filesystem.h"
 
 void display_ui(void);
@@ -287,12 +288,12 @@ void display_ui() {
 void display_about() {
     char about_input[20];
 
-    clear_screen();
+ clear_screen();
     print_to_screen("                                      About\n");
     print_to_screen("-------------------------------------------------------------------------------\n");
-    print_to_screen("  officerdownOS Main Branch v0.1.5\n");
-    print_to_screen("  officerdownOS Rocky v1.0.0\n");
-    print_to_screen("  Committed 05/27/2025\n");
+    print_to_screen("  officerdownOS " OS_VERSION "\n");
+    print_to_screen("  Committed " OS_DATE "\n");
+    print_to_screen("  Notes: " OS_NOTES "\n");
     print_to_screen("\nPress 'b' to go back to the main menu.");
 
     update_cursor(cursor_line, 0);

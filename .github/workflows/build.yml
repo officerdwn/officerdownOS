@@ -1,0 +1,91 @@
+name: Build & Test officerdownOS
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install toolchain & ISO utilities
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y \
+            gcc-multilib libc6-dev-i386 binutils make nasm \
+            grub-pc-bin xorriso mtools \
+            qemu-system-i386
+
+      - name: Show versions
+        run: |
+          gcc --version
+          ld --version | head -n 1
+          nasm -v
+          grub-mkrescue --version | head -n 1
+          qemu-system-i386 --version | head -n 1
+
+      - name: Clean
+        run: make clean || true
+
+      - name: Build kernel and ISO
+        run: |
+          set -euo pipefail
+          make iso
+          ls -l officerdownOS.iso kernel.bin
+
+      - name: Smoke test (QEMU headless, ISO)
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Boot the ISO headless; give it a brief window to print a banner, then exit
+          qemu-system-i386 \
+            -cdrom officerdownOS.iso \
+            -m 256M \
+            -nographic \
+            -no-reboot \
+            -serial mon:stdio \
+            -boot d \
+            -smp 1 \
+            -display none &
+          PID=$!
+          sleep 6
+          kill $PID || true
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: officerdownOS-artifacts
+          path: |
+            officerdownOS.iso
+            kernel.bin
+            iso/**
+          if-no-files-found: warn
+
+  release:
+    needs: build
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: officerdownOS-artifacts
+          path: dist
+      - name: Attach to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/officerdownOS.iso
+            dist/kernel.bin

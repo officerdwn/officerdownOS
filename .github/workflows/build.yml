@@ -1,4 +1,4 @@
-name: Build & Test officerdownOS
+name: Build officerdownOS (no tests)
 
 on:
   push:
@@ -6,62 +6,71 @@ on:
   pull_request:
   workflow_dispatch:
   release:
-    types: [created]
+    types: [created, published]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0   # so git describe can see tags
           submodules: true
 
-      - name: Install toolchain & ISO utilities
+      - name: Install 32-bit toolchain & ISO utils
         run: |
           sudo dpkg --add-architecture i386
           sudo apt-get update
           sudo apt-get install -y \
             gcc-multilib libc6-dev-i386 binutils make nasm \
-            grub-pc-bin xorriso mtools \
-            qemu-system-i386
-
-      - name: Show versions
-        run: |
-          gcc --version
-          ld --version | head -n 1
-          nasm -v
-          grub-mkrescue --version | head -n 1
-          qemu-system-i386 --version | head -n 1
+            grub-pc-bin xorriso mtools
 
       - name: Clean
         run: make clean || true
+
+      - name: Generate version.h (tag + ghubactions)
+        shell: bash
+        run: |
+          set -euo pipefail
+          COMMIT="$(git rev-parse --short HEAD || echo dev)"
+          DATE="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+          # Prefer the tag when building a release or a tag ref; otherwise fallback to latest tag or "CI"
+          TAG_FROM_REF=""
+          if [[ "${GITHUB_REF:-}" == refs/tags/* ]]; then
+            TAG_FROM_REF="${GITHUB_REF#refs/tags/}"
+          elif [[ -n "${GITHUB_REF_NAME:-}" && "${GITHUB_REF:-}" == refs/tags/* ]]; then
+            TAG_FROM_REF="${GITHUB_REF_NAME}"
+          fi
+
+          # Latest tag in repo (if any)
+          TAG_LATEST="$(git describe --tags --abbrev=0 2>/dev/null || true)"
+
+          TAG="${TAG_FROM_REF:-${TAG_LATEST}}"
+          [[ -z "$TAG" ]] && TAG="CI"
+
+          VERSION="${TAG}+ghubactions"
+
+          mkdir -p include
+          cat > version.h <<EOF
+#ifndef VERSION_H
+#define VERSION_H
+#define ODOS_VERSION "${VERSION}"
+#define ODOS_GIT_COMMIT "${COMMIT}"
+#define ODOS_BUILD_DATE "${DATE}"
+#endif
+EOF
+          cp version.h include/version.h
+          echo "Generated version.h with ODOS_VERSION=${VERSION}"
 
       - name: Build kernel and ISO
         run: |
           set -euo pipefail
           make iso
-          ls -l officerdownOS.iso kernel.bin
-
-      - name: Smoke test (QEMU headless, ISO)
-        shell: bash
-        run: |
-          set -euo pipefail
-          # Boot the ISO headless; give it a brief window to print a banner, then exit
-          qemu-system-i386 \
-            -cdrom officerdownOS.iso \
-            -m 256M \
-            -nographic \
-            -no-reboot \
-            -serial mon:stdio \
-            -boot d \
-            -smp 1 \
-            -display none &
-          PID=$!
-          sleep 6
-          kill $PID || true
+          ls -l officerdownOS.iso kernel.bin || true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

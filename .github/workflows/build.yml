@@ -1,4 +1,4 @@
-name: Build officerdownOS (no tests)
+name: Build officerdownOS 
 
 on:
   push:

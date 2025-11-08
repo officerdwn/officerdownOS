@@ -18,6 +18,7 @@
 officerdownOS
 ==============
 credit to fdipilla for the base.
+archived because ai slop
 
 
 My biggest programming dream, coming true.
